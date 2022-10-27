@@ -4,6 +4,7 @@ import point as p
 class Sheep(p.Point):
 
     sheep_move_distance:float
+    isAlive:bool = True
     
     def __init__(self, init_pos_limit:float, sheep_move_distance) -> None:
         self.rand_position(init_pos_limit)
@@ -14,8 +15,9 @@ class Sheep(p.Point):
         self.y = r.uniform(-init_pos_limit, init_pos_limit)
     
     def make_move(self):
-        dir = r.randint(0,3)
-        self.move_self(dir)
+        if self.isAlive:
+            dir = r.randint(0,3)
+            self.move_self(dir)
 
     def move_self(self, direction:int):
         if(direction == 0):
