@@ -5,12 +5,13 @@ class Sheep(p.Point):
 
     sheep_move_distance:float
     
-    def __init__(self, init_pos_limit:float) -> None:
+    def __init__(self, init_pos_limit:float, sheep_move_distance) -> None:
         self.rand_position(init_pos_limit)
+        self.sheep_move_distance = sheep_move_distance
 
     def rand_position(self, init_pos_limit:float):
-        self.posX = r.uniform(-init_pos_limit, init_pos_limit)
-        self.posY = r.uniform(-init_pos_limit, init_pos_limit)
+        self.x = r.uniform(-init_pos_limit, init_pos_limit)
+        self.y = r.uniform(-init_pos_limit, init_pos_limit)
     
     def make_move(self):
         dir = r.randint(0,3)
