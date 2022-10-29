@@ -19,4 +19,4 @@ class Point(object):
 
 
     def __str__(self) -> str:
-        return f"Point x:{self.x} y:{self.y}"
+        return f"{round(self.x,3)},{round(self.y,3)}"
