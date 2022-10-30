@@ -4,30 +4,41 @@ import csv
 from wolf import Wolf
 from point import Point
 
+
 class Simulation(object):
 
     sheeps_collection = []
     dump_list = []
     csv_report = []
 
-    def __init__(self, rounds, sheeps_number, init_pos_limit, sheep_move_dist, wolf_move_dist):
+    def __init__(
+            self,
+            rounds,
+            sheeps_number,
+            init_pos_limit,
+            sheep_move_dist,
+            wolf_move_dist):
         self.rounds = rounds
         self.create_sheeps(sheeps_number, init_pos_limit, sheep_move_dist)
         self.wolf = Wolf(wolf_move_dist)
-        
-    def create_sheeps(self, sheeps_number, init_pos_limit, sheep_move_distance):
+
+    def create_sheeps(
+            self,
+            sheeps_number,
+            init_pos_limit,
+            sheep_move_distance):
         for _ in range(sheeps_number):
-            self.sheeps_collection.append(s.Sheep(init_pos_limit, sheep_move_distance))
+            self.sheeps_collection.append(
+                s.Sheep(init_pos_limit, sheep_move_distance))
         self.alives = sheeps_number
-        
+
     def simulate_round(self):
         if self.alives == 0:
             return True
-        
+
         self.simulate_sheeps()
         self.simulate_wolf()
         return False
-
 
     def simulate_wolf(self):
         sheep = self.attach_closest_sheep()
@@ -35,16 +46,16 @@ class Simulation(object):
             sheep.isAlive = False
             self.alives -= 1
 
-    def attach_closest_sheep(self) :
+    def attach_closest_sheep(self):
         ab = -1
         index = 0
         for i, val in enumerate(self.sheeps_collection):
-            if val.isAlive == False:
+            if not val.isAlive:
                 continue
 
             len = Point.distance(self.wolf, val)
             if ab == -1:
-                ab = len 
+                ab = len
                 index = i
             elif len < ab:
                 ab = len
@@ -55,26 +66,25 @@ class Simulation(object):
     def simulate_sheeps(self):
         for value in self.sheeps_collection:
             value.make_move()
-    
+
     def start_simulation(self):
         for i in range(self.rounds):
             if self.simulate_round():
-                break;
-            self.std_output_report(i+1)
-            self.update_dump(i+1)
+                break
+            self.std_output_report(i + 1)
+            self.update_dump(i + 1)
         self.json_dump()
         self.csv_dump()
 
-    def update_dump(self,round:int):
+    def update_dump(self, round: int):
         self.dump_list.append(
             {
-                "round_no" : round, 
-                "wolf_pos" : (self.wolf.x, self.wolf.y),
+                "round_no": round,
+                "wolf_pos": (self.wolf.x, self.wolf.y),
                 "sheeps_pos ": self.get_alive_sheeps_pos()
             }
         )
         self.csv_report.append([round, self.alives])
-
 
     def get_alive_sheeps_pos(self):
         list = []
@@ -86,8 +96,8 @@ class Simulation(object):
         return list
 
     def json_dump(self):
-        with open("pos.json","w") as output:
-            json.dump(self.dump_list, output,indent='\t')
+        with open("pos.json", "w") as output:
+            json.dump(self.dump_list, output, indent='\t')
 
     def csv_dump(self):
         with open("alive.csv", "w") as target:
@@ -97,7 +107,8 @@ class Simulation(object):
     def std_output_report(self, round_nr):
         print(f"Round : {round_nr}")
         print(f"Sheeps alive : {self.alives}")
-        print(f"Current Target : {self.sheeps_collection.index(self.wolf.target)}")
+        print(
+            f"Current Target : {self.sheeps_collection.index(self.wolf.target)}")
         print(f"Wolf : {self.wolf}")
 
         for i, val in enumerate(self.sheeps_collection):
