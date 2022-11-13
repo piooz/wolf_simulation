@@ -1,5 +1,4 @@
 from math import sqrt
-import math
 
 
 class Point(object):

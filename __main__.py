@@ -36,5 +36,5 @@ if __name__ == "__main__":
     logger = setup_logging();
     setup_args()
     print("hello world")
-    sim = simulation.Simulation(3, 10, 10, 1, 1)
+    sim = simulation.Simulation(3,10,10,3,4);
     sim.start_simulation()

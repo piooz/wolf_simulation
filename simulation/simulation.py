@@ -1,8 +1,8 @@
-import sheep as s
 import json
 import csv
-from wolf import Wolf
-from point import Point
+from .sheep import *
+from .wolf import *
+from .point import *
 
 
 class Simulation(object):
@@ -29,7 +29,8 @@ class Simulation(object):
             sheep_move_distance):
         for _ in range(sheeps_number):
             self.sheeps_collection.append(
-                s.Sheep(init_pos_limit, sheep_move_distance))
+                Sheep(init_pos_limit, sheep_move_distance))
+
         self.alives = sheeps_number
 
     def simulate_round(self):

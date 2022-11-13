@@ -1,8 +1,8 @@
 import random as r
-import point as p
+from .point import *
 
 
-class Sheep(p.Point):
+class Sheep(Point):
 
     sheep_move_distance: float
     isAlive: bool = True
