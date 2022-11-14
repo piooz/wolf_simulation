@@ -15,6 +15,7 @@ class Simulation(object):
     dump_list = []
     csv_report = []
     log_level = logging.DEBUG
+    round = 0
 
     def __init__(
             self,
@@ -27,19 +28,20 @@ class Simulation(object):
         self.rounds = rounds
         self.__create_sheeps(sheeps_number, init_pos_limit, sheep_move_dist)
         self.wolf = Wolf(wolf_move_dist)
+        self.round = 0
 
 
     def __setup_logging(self, level):
-        logger = logging.getLogger();
-        logger.setLevel(level);
+        logger = logging.getLogger()
+        logger.setLevel(level)
 
-        file = logging.FileHandler('chase.log');
-        file.setFormatter(logging.Formatter(FILE_FORMAT));
+        file = logging.FileHandler('chase.log')
+        file.setFormatter(logging.Formatter(FILE_FORMAT))
         file.setLevel(level);
 
-        logger.addHandler(file);
+        logger.addHandler(file)
         
-        logger.warning('siema');
+        logger.warning('siema')
         return logger;
         
 
@@ -55,11 +57,14 @@ class Simulation(object):
         self.alives = sheeps_number
 
     def simulate_round(self):
-        if self.alives == 0:
-            return True
+        self.round += 1
 
         self.__simulate_sheeps()
         self.__simulate_wolf()
+
+        if self.alives == 0:
+            return True
+
         return False
 
     def __simulate_wolf(self):
@@ -139,3 +144,17 @@ class Simulation(object):
             else:
                 print("None")
         print('---------------------')
+    
+    def get_raport(self):
+        round =  f"Round : {self.round}\n"
+        sheeps_alive =  f"Sheep Alive : {self.alives}\n"
+        target =  f"Current Target : {self.sheeps_collection.index(self.wolf.target)}\n"
+        wolf =  f"Wolf possition : {self.wolf}\n"
+        sheeps =  ""
+        for i, val in enumerate(self.sheeps_collection):
+            if val.isAlive:
+                sheeps += f"Sheep nr {i} : {self.sheeps_collection[i]}\n"
+            else:
+                sheeps += "None\n"
+
+        return round + sheeps_alive + target + wolf + sheeps
