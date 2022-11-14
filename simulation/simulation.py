@@ -1,15 +1,20 @@
 import json
 import csv
+import logging
 from .sheep import *
 from .wolf import *
 from .point import *
 
+
+BASE_FROMAT = '[%(name)s][%(levelname)-6s] %(message)s'
+FILE_FORMAT = '[%(asctime)s]' + BASE_FROMAT
 
 class Simulation(object):
 
     sheeps_collection = []
     dump_list = []
     csv_report = []
+    log_level = logging.DEBUG
 
     def __init__(
             self,
@@ -18,11 +23,27 @@ class Simulation(object):
             init_pos_limit,
             sheep_move_dist,
             wolf_move_dist):
+        self.logger = self.__setup_logging(self.log_level)
         self.rounds = rounds
-        self.create_sheeps(sheeps_number, init_pos_limit, sheep_move_dist)
+        self.__create_sheeps(sheeps_number, init_pos_limit, sheep_move_dist)
         self.wolf = Wolf(wolf_move_dist)
 
-    def create_sheeps(
+
+    def __setup_logging(self, level):
+        logger = logging.getLogger();
+        logger.setLevel(level);
+
+        file = logging.FileHandler('chase.log');
+        file.setFormatter(logging.Formatter(FILE_FORMAT));
+        file.setLevel(level);
+
+        logger.addHandler(file);
+        
+        logger.warning('siema');
+        return logger;
+        
+
+    def __create_sheeps(
             self,
             sheeps_number,
             init_pos_limit,
@@ -37,17 +58,17 @@ class Simulation(object):
         if self.alives == 0:
             return True
 
-        self.simulate_sheeps()
-        self.simulate_wolf()
+        self.__simulate_sheeps()
+        self.__simulate_wolf()
         return False
 
-    def simulate_wolf(self):
-        sheep = self.attach_closest_sheep()
+    def __simulate_wolf(self):
+        sheep = self.__attach_closest_sheep()
         if self.wolf.chase():
             sheep.isAlive = False
             self.alives -= 1
 
-    def attach_closest_sheep(self):
+    def __attach_closest_sheep(self):
         ab = -1
         index = 0
         for i, val in enumerate(self.sheeps_collection):
@@ -64,7 +85,7 @@ class Simulation(object):
         self.wolf.set_target(self.sheeps_collection[index])
         return self.sheeps_collection[index]
 
-    def simulate_sheeps(self):
+    def __simulate_sheeps(self):
         for value in self.sheeps_collection:
             value.make_move()
 
@@ -82,12 +103,12 @@ class Simulation(object):
             {
                 "round_no": round,
                 "wolf_pos": (self.wolf.x, self.wolf.y),
-                "sheeps_pos ": self.get_alive_sheeps_pos()
+                "sheeps_pos ": self.__get_alive_sheeps_pos()
             }
         )
         self.csv_report.append([round, self.alives])
 
-    def get_alive_sheeps_pos(self):
+    def __get_alive_sheeps_pos(self):
         list = []
         for val in self.sheeps_collection:
             if val.isAlive:
