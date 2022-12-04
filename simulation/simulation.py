@@ -1,13 +1,14 @@
 import json
 import csv
 import logging
-from .sheep import *
-from .wolf import *
-from .point import *
+from .sheep import Sheep
+from .wolf import Wolf
+from .point import Point
 
 
 BASE_FROMAT = '[%(name)s][%(levelname)-6s] %(message)s'
 FILE_FORMAT = '[%(asctime)s]' + BASE_FROMAT
+
 
 class Simulation(object):
 
@@ -23,13 +24,15 @@ class Simulation(object):
             sheeps_number,
             init_pos_limit,
             sheep_move_dist,
-            wolf_move_dist):
+            wolf_move_dist,
+            log_level):
+
+        self.log_level = log_level
         self.logger = self.__setup_logging(self.log_level)
         self.rounds = rounds
         self.__create_sheeps(sheeps_number, init_pos_limit, sheep_move_dist)
         self.wolf = Wolf(wolf_move_dist)
         self.round = 0
-
 
     def __setup_logging(self, level):
         logger = logging.getLogger()
@@ -37,13 +40,11 @@ class Simulation(object):
 
         file = logging.FileHandler('chase.log')
         file.setFormatter(logging.Formatter(FILE_FORMAT))
-        file.setLevel(level);
+        file.setLevel(level)
 
         logger.addHandler(file)
-        
         logger.warning('siema')
-        return logger;
-        
+        return logger
 
     def __create_sheeps(
             self,
@@ -144,13 +145,13 @@ class Simulation(object):
             else:
                 print("None")
         print('---------------------')
-    
+
     def get_raport(self):
-        round =  f"Round : {self.round}\n"
-        sheeps_alive =  f"Sheep Alive : {self.alives}\n"
-        target =  f"Current Target : {self.sheeps_collection.index(self.wolf.target)}\n"
-        wolf =  f"Wolf possition : {self.wolf}\n"
-        sheeps =  ""
+        round = f"Round : {self.round}\n"
+        sheeps_alive = f"Sheep Alive : {self.alives}\n"
+        target = f"Current Target : {self.sheeps_collection.index(self.wolf.target)}\n"
+        wolf = f"Wolf possition : {self.wolf}\n"
+        sheeps = ""
         for i, val in enumerate(self.sheeps_collection):
             if val.isAlive:
                 sheeps += f"Sheep nr {i} : {self.sheeps_collection[i]}\n"
