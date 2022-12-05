@@ -6,8 +6,9 @@ from .wolf import Wolf
 from .point import Point
 
 
-BASE_FROMAT = '[%(name)s][%(levelname)-6s] %(message)s'
+BASE_FROMAT = '[%(name)s][%(levelname)-6s][%(funcName)s] %(message)s'
 FILE_FORMAT = '[%(asctime)s]' + BASE_FROMAT
+LOG_FILE = 'chase.log'
 
 
 class Simulation(object):
@@ -27,7 +28,7 @@ class Simulation(object):
             wolf_move_dist,
             log_level):
 
-        self.log_level = log_level
+        self.log_level = logging.getLevelName(log_level)
         self.logger = self.__setup_logging(self.log_level)
         self.rounds = rounds
         self.__create_sheeps(sheeps_number, init_pos_limit, sheep_move_dist)
@@ -38,7 +39,7 @@ class Simulation(object):
         logger = logging.getLogger()
         logger.setLevel(level)
 
-        file = logging.FileHandler('chase.log')
+        file = logging.FileHandler(LOG_FILE)
         file.setFormatter(logging.Formatter(FILE_FORMAT))
         file.setLevel(level)
 
@@ -56,6 +57,7 @@ class Simulation(object):
                 Sheep(init_pos_limit, sheep_move_distance))
 
         self.alives = sheeps_number
+        logging.debug("returning void")
 
     def simulate_round(self):
         self.round += 1
@@ -64,8 +66,10 @@ class Simulation(object):
         self.__simulate_wolf()
 
         if self.alives == 0:
+            logging.debug("returning True")
             return True
 
+        logging.debug("returning False")
         return False
 
     def __simulate_wolf(self):
@@ -73,6 +77,7 @@ class Simulation(object):
         if self.wolf.chase():
             sheep.isAlive = False
             self.alives -= 1
+        logging.debug("returning void")
 
     def __attach_closest_sheep(self):
         ab = -1
@@ -89,11 +94,13 @@ class Simulation(object):
                 ab = len
                 index = i
         self.wolf.set_target(self.sheeps_collection[index])
+        logging.debug(f"returning sheep {index} {self.sheeps_collection[index]}")
         return self.sheeps_collection[index]
 
     def __simulate_sheeps(self):
         for value in self.sheeps_collection:
             value.make_move()
+        logging.debug("moved sheeps. returning void")
 
     def start_simulation(self):
         for i in range(self.rounds):
@@ -103,6 +110,7 @@ class Simulation(object):
             self.update_dump(i + 1)
         self.json_dump()
         self.csv_dump()
+        logging.debug("returning void")
 
     def update_dump(self, round: int):
         self.dump_list.append(
@@ -113,6 +121,7 @@ class Simulation(object):
             }
         )
         self.csv_report.append([round, self.alives])
+        logging.debug("append to file, return void")
 
     def __get_alive_sheeps_pos(self):
         list = []
@@ -121,16 +130,19 @@ class Simulation(object):
                 list.append((val.x, val.y))
             else:
                 list.append(None)
+        logging.debug(f"returning {list}")
         return list
 
     def json_dump(self):
         with open("pos.json", "w") as output:
             json.dump(self.dump_list, output, indent='\t')
+        logging.debug("return void")
 
     def csv_dump(self):
         with open("alive.csv", "w") as target:
             writer = csv.writer(target)
             writer.writerows(self.csv_report)
+        logging.debug("return void")
 
     def std_output_report(self, round_nr):
         print(f"Round : {round_nr}")
@@ -145,6 +157,7 @@ class Simulation(object):
             else:
                 print("None")
         print('---------------------')
+        logging.debug("printed raprot return void")
 
     def get_raport(self):
         round = f"Round : {self.round}\n"
@@ -158,4 +171,5 @@ class Simulation(object):
             else:
                 sheeps += "None\n"
 
+        logging.debug(f"return {round.__class__}")
         return round + sheeps_alive + target + wolf + sheeps

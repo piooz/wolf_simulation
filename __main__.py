@@ -1,6 +1,5 @@
 #!/bin/env python
 
-from logging import DEBUG
 import simulation
 import argparse
 import configparser
