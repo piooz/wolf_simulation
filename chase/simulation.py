@@ -57,6 +57,12 @@ class Simulation(object):
                 Sheep(init_pos_limit, sheep_move_distance))
 
         self.alives = sheeps_number
+
+        infoStr = ''
+        for i, sheep in enumerate(self.sheeps_collection):
+            infoStr += f"sheep {i}: {sheep} "
+
+        logging.info(infoStr)
         logging.debug("returning void")
 
     def simulate_round(self):
@@ -100,7 +106,8 @@ class Simulation(object):
     def __simulate_sheeps(self):
         for value in self.sheeps_collection:
             value.make_move()
-        logging.debug("moved sheeps. returning void")
+
+        logging.debug("returning void")
 
     def start_simulation(self):
         for i in range(self.rounds):

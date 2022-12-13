@@ -1,5 +1,5 @@
 import random as r
-from .point import *
+from .point import Point
 
 
 class Sheep(Point):
