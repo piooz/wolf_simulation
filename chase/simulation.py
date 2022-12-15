@@ -9,7 +9,13 @@ from .point import Point
 BASE_FROMAT = '[%(name)s][%(levelname)-6s][%(funcName)s] %(message)s'
 FILE_FORMAT = '[%(asctime)s]' + BASE_FROMAT
 LOG_FILE = 'chase.log'
+CSV_FILE = 'alive.csv'
+JSON_FILE = "pom.json"
 
+
+# TODO: --try logging with decorator--
+# TODO: implement wait refactor
+# FIX: move print to std --> __main.py__
 
 class Simulation(object):
 
@@ -44,7 +50,6 @@ class Simulation(object):
         file.setLevel(level)
 
         logger.addHandler(file)
-        logger.warning('siema')
         return logger
 
     def __create_sheeps(
@@ -141,12 +146,12 @@ class Simulation(object):
         return list
 
     def json_dump(self):
-        with open("pos.json", "w") as output:
+        with open(JSON_FILE, "w") as output:
             json.dump(self.dump_list, output, indent='\t')
         logging.debug("return void")
 
     def csv_dump(self):
-        with open("alive.csv", "w") as target:
+        with open(CSV_FILE, "w") as target:
             writer = csv.writer(target)
             writer.writerows(self.csv_report)
         logging.debug("return void")

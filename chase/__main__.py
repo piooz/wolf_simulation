@@ -1,6 +1,6 @@
 #!/bin/env python
 
-# from .simulation import Simulation
+from .simulation import Simulation
 import argparse
 import configparser
 import os
