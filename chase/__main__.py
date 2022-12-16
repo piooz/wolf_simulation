@@ -66,4 +66,8 @@ if __name__ == "__main__":
         init_pos_limit, sheep_move_dist, wolf_move_dist = parse_config(args.config)
 
     sim = Simulation(rounds, sheeps_number, init_pos_limit, sheep_move_dist, wolf_move_dist, log_level)
-    sim.start_simulation()
+
+    while not sim.simulate_round():
+        print(sim.get_raport())
+        if wait:
+            input('Press Enter to continue\n')

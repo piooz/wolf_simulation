@@ -6,16 +6,13 @@ from .wolf import Wolf
 from .point import Point
 
 
+# Constants
 BASE_FROMAT = '[%(name)s][%(levelname)-6s][%(funcName)s] %(message)s'
 FILE_FORMAT = '[%(asctime)s]' + BASE_FROMAT
 LOG_FILE = 'chase.log'
 CSV_FILE = 'alive.csv'
-JSON_FILE = "pom.json"
+JSON_FILE = 'pom.json'
 
-
-# TODO: --try logging with decorator--
-# TODO: implement wait refactor
-# FIX: move print to std --> __main.py__
 
 class Simulation(object):
 
@@ -36,10 +33,9 @@ class Simulation(object):
 
         self.log_level = logging.getLevelName(log_level)
         self.logger = self.__setup_logging(self.log_level)
-        self.rounds = rounds
+        self.planned_rounds = rounds
         self.__create_sheeps(sheeps_number, init_pos_limit, sheep_move_dist)
         self.wolf = Wolf(wolf_move_dist)
-        self.round = 0
 
     def __setup_logging(self, level):
         logger = logging.getLogger()
@@ -52,11 +48,7 @@ class Simulation(object):
         logger.addHandler(file)
         return logger
 
-    def __create_sheeps(
-            self,
-            sheeps_number,
-            init_pos_limit,
-            sheep_move_distance):
+    def __create_sheeps(self, sheeps_number, init_pos_limit, sheep_move_distance):
         for _ in range(sheeps_number):
             self.sheeps_collection.append(
                 Sheep(init_pos_limit, sheep_move_distance))
@@ -70,16 +62,28 @@ class Simulation(object):
         logging.info(infoStr)
         logging.debug("returning void")
 
+    # def start_simulation(self):
+    #     while not self.simulate_round():
+    #         self.std_output_report(self.round)
+    #     logging.debug("returning void")
+
     def simulate_round(self):
+        """
+        Simulate hole round with updting dump files
+        return: True when simulation ends ohterwise returns False
+        """
         self.round += 1
 
         self.__simulate_sheeps()
         self.__simulate_wolf()
 
-        if self.alives == 0:
+        if self.alives == 0 or self.round > self.planned_rounds:
+            self.json_dump()
+            self.csv_dump()
             logging.debug("returning True")
             return True
 
+        self.update_dump(self.round)
         logging.debug("returning False")
         return False
 
@@ -114,16 +118,6 @@ class Simulation(object):
 
         logging.debug("returning void")
 
-    def start_simulation(self):
-        for i in range(self.rounds):
-            if self.simulate_round():
-                break
-            self.std_output_report(i + 1)
-            self.update_dump(i + 1)
-        self.json_dump()
-        self.csv_dump()
-        logging.debug("returning void")
-
     def update_dump(self, round: int):
         self.dump_list.append(
             {
@@ -156,21 +150,6 @@ class Simulation(object):
             writer.writerows(self.csv_report)
         logging.debug("return void")
 
-    def std_output_report(self, round_nr):
-        print(f"Round : {round_nr}")
-        print(f"Sheeps alive : {self.alives}")
-        print(
-            f"Current Target : {self.sheeps_collection.index(self.wolf.target)}")
-        print(f"Wolf : {self.wolf}")
-
-        for i, val in enumerate(self.sheeps_collection):
-            if val.isAlive:
-                print(f"Sheep nr {i} : {self.sheeps_collection[i]}")
-            else:
-                print("None")
-        print('---------------------')
-        logging.debug("printed raprot return void")
-
     def get_raport(self):
         round = f"Round : {self.round}\n"
         sheeps_alive = f"Sheep Alive : {self.alives}\n"
@@ -185,3 +164,19 @@ class Simulation(object):
 
         logging.debug(f"return {round.__class__}")
         return round + sheeps_alive + target + wolf + sheeps
+
+    # # std_output_report is deprecated
+    # def std_output_report(self, round_nr):
+    #     print(f"Round : {round_nr}")
+    #     print(f"Sheeps alive : {self.alives}")
+    #     print(
+    #         f"Current Target : {self.sheeps_collection.index(self.wolf.target)}")
+    #     print(f"Wolf : {self.wolf}")
+    #
+    #     for i, val in enumerate(self.sheeps_collection):
+    #         if val.isAlive:
+    #             print(f"Sheep nr {i} : {self.sheeps_collection[i]}")
+    #         else:
+    #             print("None")
+    #     print('---------------------')
+    #     logging.debug("printed raprot return void")
