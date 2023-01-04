@@ -51,6 +51,8 @@ def parse_config(filename):
 if __name__ == "__main__":
     args = setup_args()
     if args.dir:
+        if not os.path.exists(args.dir):
+            os.mkdir(args.dir)
         os.chdir(args.dir)
 
     rounds = args.rounds
